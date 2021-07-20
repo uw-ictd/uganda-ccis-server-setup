@@ -152,6 +152,11 @@ def run_sync_endpoint_build():
                cd sync-endpoint ; \
                mvn -pl org.opendatakit:sync-endpoint-war,org.opendatakit:sync-endpoint-docker-swarm,org.opendatakit:sync-endpoint-common-dependencies clean install -DskipTests")
 
+def run_dashboard_build():
+    os.system("git clone -b main --single-branch --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
+               cp .env ccis-dashboard ; \
+               cd ccis-dashboard ; \
+               docker build -t ccis/dashboard .")
 
 def deploy_stack(use_https):
     if use_https:
@@ -164,4 +169,5 @@ if __name__ == "__main__":
     https = run_interactive_config()
     run_docker_builds()
     run_sync_endpoint_build()
+    run_dashboard_build()
     deploy_stack(https)

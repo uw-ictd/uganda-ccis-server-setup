@@ -102,10 +102,10 @@ def run_interactive_config():
 def run_interactive_dashboard_config(domain):
     print("To run the dashboard, you must first get a (free) Mapbox API token (https://www.mapbox.com/mapbox-gljs).")
     print("If you have not done this yet, please do it now...")
-    mapbox = input("What is your mapbox API token?")
+    mapbox = input("What is your mapbox API token? ")
     write_dashboard_env_file(domain, mapbox)
 
-def write_dashboard_env_file(domain, mapbox)
+def write_dashboard_env_file(domain, mapbox):
     filepath = os.path.join(os.path.dirname(__file__), "dashboard.env")
     """A janky in-memory file write.
 

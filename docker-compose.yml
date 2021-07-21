@@ -75,6 +75,8 @@ services:
       - org.opendatakit.sync-web-ui.application.properties
   dashboard:
     image: ccis/dashboard
+    networks:
+      - sync-network
   nginx:
     image: nginx:1.19.4
     networks:

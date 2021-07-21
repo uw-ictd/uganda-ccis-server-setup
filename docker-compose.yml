@@ -73,7 +73,8 @@ services:
     hostname: web-ui
     configs:
       - org.opendatakit.sync-web-ui.application.properties
-
+  dashboard:
+    image: ccis/dashboard
   nginx:
     image: nginx:1.19.4
     networks:

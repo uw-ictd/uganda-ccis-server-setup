@@ -96,8 +96,33 @@ def run_interactive_config():
         print("Attempting to save updated https configuration")
         write_to_env_file(env_file_location, domain, email)
 
+    run_interactive_dashboard_config(domain)
     return enforce_https
 
+def run_interactive_dashboard_config(domain):
+    print("To run the dashboard, you must first get a (free) Mapbox API token (https://www.mapbox.com/mapbox-gljs).")
+    print("If you have not done this yet, please do it now...")
+    mapbox = input("What is your mapbox API token?")
+    write_dashboard_env_file(domain, mapbox)
+
+def write_dashboard_env_file(domain, mapbox)
+    filepath = os.path.join(os.path.dirname(__file__), "dashboard.env")
+    """A janky in-memory file write.
+
+    This is not atomic and would use lots of ram for large files.
+    """
+    file_lines = []
+    with open(filepath, mode="r") as f:
+        for line in f:
+            file_lines.append(line)
+
+    with open(filepath, mode="w") as f:
+        for line in file_lines:
+            if line.startswith("MAPBOX_API_TOKEN="):
+                line = "MAPBOX_API_TOKEN={}\n".format(mapbox)
+            if line.startswith("ODKX_AUTH_URL="):
+                line = "ODKX_AUTH_URL={}\n".format(domain + "/odktables/default/privilegesInfo")
+            f.write(line)
 
 def replaceInFile(file_path, pattern, subst):
     fh, abs_path = mkstemp()
@@ -154,7 +179,7 @@ def run_sync_endpoint_build():
 
 def run_dashboard_build():
     os.system("git clone -b main --single-branch --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
-               cp .env ccis-dashboard ; \
+               cp dashboard.env ccis-dashboard/.env ; \
                cd ccis-dashboard ; \
                docker build -t ccis/dashboard .")
 

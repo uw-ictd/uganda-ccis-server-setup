@@ -121,7 +121,7 @@ def write_dashboard_env_file(domain, mapbox):
             if line.startswith("MAPBOX_API_TOKEN="):
                 line = "MAPBOX_API_TOKEN={}\n".format(mapbox)
             if line.startswith("ODKX_AUTH_URL="):
-                line = "ODKX_AUTH_URL={}\n".format(domain + "/odktables/default/privilegesInfo")
+                line = "ODKX_AUTH_URL=https://{}/odktables/default/privilegesInfo\n".format(domain)
             f.write(line)
 
 def replaceInFile(file_path, pattern, subst):

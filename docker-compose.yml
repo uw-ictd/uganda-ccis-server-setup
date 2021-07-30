@@ -76,25 +76,31 @@ services:
   dashboard:
     image: ccis/dashboard
     networks:
-      - sync-network
+      - dashboard-network
     ports:
       - 444:443
     env_file:
       - dashboard.env
   dashboard-database:
     image: ccis/dashboard-db
+    networks:
+      - dashboard-network
+    volumes:
+      - dashboard-db-vol:/var/lib/postgresql/data
     env_file:
       - dashboard-database.env
   data-sync:
     image: db-sync
     networks:
       - sync-network
+      - dashboard-network
     ports:
       - 1433:1433
   nginx:
     image: nginx:1.19.4
     networks:
       - sync-network
+      - dashboard-network
     ports:
       - 80:80
       - 443:443
@@ -122,9 +128,15 @@ networks:
     driver_opts:
       encrypted: ""
     internal: true
+  dashboard-network:
+    driver: overlay
+    driver_opts:
+      encrypted: ""
+    internal: true
 
 volumes:
   db-vol: # preserve db
+  dashboard-db-vol: # preserve dashboard's copy of the db
   # these 2 need to be removed together
   ldap-vol: # preserve ldap db
   ldap-slapd.d-vol: # preserve ldap settings

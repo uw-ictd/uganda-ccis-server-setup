@@ -9,9 +9,11 @@ support for internationalization.
 import time
 import os
 import re
+import string
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
+from random import SystemRandom
 
 def run_interactive_config():
     env_file_location = os.path.join(os.path.dirname(__file__), "config", "https.env")
@@ -121,7 +123,14 @@ def write_dashboard_env_file(domain, mapbox):
             if line.startswith("MAPBOX_API_TOKEN="):
                 line = "MAPBOX_API_TOKEN={}\n".format(mapbox)
             if line.startswith("ODKX_AUTH_URL="):
+                print("Setting ODKX_AUTH_URL")
                 line = "ODKX_AUTH_URL=https://{}/odktables/default/privilegesInfo\n".format(domain)
+            if line.startswith("COOKIE_KEY="):
+                print("Setting COOKIE_KEY")
+                """ Get a long random string """
+                key = ''.join(SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(40))
+                line = "COOKIE_KEY={}\n".format(key)
+
             f.write(line)
 
 def replaceInFile(file_path, pattern, subst):

@@ -2,25 +2,8 @@
 - Git
 - Docker (with swarm mode enabled)
 - Maven
+- A [mapbox](https://www.mapbox.com/) account and [API token](https://docs.mapbox.com/help/glossary/access-token/)
 - (optional) Python3 and Certbot (These are needed if you are planning on using the [init-odkx-sync-endpoint.py](#Ubuntu-18.04-Example-installation) script and SSL certificates from letsencrypt)
-
-## dashboard.env file
-Create a file named `dashboard.env` in the top level, and fill in the following fields
-for your deployment.
-```
-DB_SERVER=
-DB_NAME=
-DB_USER=
-DB_PASS=
-MAPBOX_API_TOKEN=
-COOKIE_KEY=
-ODKX_AUTH_URL=
-```
-* `DB_SERVER` is the URL of a Microsoft T-SQL server
-* `DB_NAME` is the name of a database on that server
-* `DB_USER` and `DB_PASS` are the login credentials for a (read-only) user on that database
-* `MAPBOX_API_TOKEN` is the token generated above
-* `COOKIE_KEY` should be newly-generated, a strong random secret which is used to encrypt authentication details
 
 ## Build
 Use the included init-odkx-sync-endpoint.py script [(see example installation on Ubuntu)](#Ubuntu-18.04-Example-installation) or follow the instructions below:
@@ -29,7 +12,7 @@ Use the included init-odkx-sync-endpoint.py script [(see example installation on
 3. Build `db-bootstrap` with `docker build -t odk/db-bootstrap db-bootstrap`
 4. Build `openldap` with `docker build -t odk/openldap openldap`
 5. Build `phpldapadmin` with `docker build -t odk/phpldapadmin phpldapadmin`
-6. Follow instructions on https://github.com/uw-ictd/ccis-dashboard to build `ccis/dashboard`
+6. Follow instructions on https://github.com/uw-ictd/ccis-dashboard to build `ccis/dashboard` and `ccis/dashboard-database` (note the requirement to get a `MAPBOX_API_TOKEN`)
 
 ## Run
 

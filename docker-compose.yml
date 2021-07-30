@@ -59,7 +59,7 @@ services:
       - sync-network
     env_file:
       - sync.env
-    # uncomment these after uncommenting the ones below in the root level configs 
+    # uncomment these after uncommenting the ones below in the root level configs
     # configs:
       # - org.opendatakit.sync.ldapcert
       # - org.opendatakit.aggregate.logging.properties
@@ -78,21 +78,26 @@ services:
     networks:
       - sync-network
     ports:
-      - "1434:1433"
-      - "444:443"
+      - 444:443
+    env_file:
+      - dashboard.env
+  dashboard-database:
+    image: ccis/dashboard-db
+    env_file:
+      - dashboard-database.env
   data-sync:
     image: db-sync
     networks:
       - sync-network
     ports:
-      - "1433:1433"
+      - 1433:1433
   nginx:
     image: nginx:1.19.4
     networks:
       - sync-network
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     configs:
       - source: com.nginx.sync-endpoint.conf
         target: /etc/nginx/conf.d/default.conf

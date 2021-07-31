@@ -187,8 +187,7 @@ def run_sync_endpoint_build():
                mvn -pl org.opendatakit:sync-endpoint-war,org.opendatakit:sync-endpoint-docker-swarm,org.opendatakit:sync-endpoint-common-dependencies clean install -DskipTests")
 
 def run_dashboard_build():
-    os.system("git clone -b main --single-branch --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
-               cp dashboard.env ccis-dashboard/.env ; \
+    os.system("git clone -b main --single-branch --branch 88-postgres-docker-database --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
                cd ccis-dashboard ; \
                docker build -t ccis/dashboard .")
 

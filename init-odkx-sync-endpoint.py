@@ -210,7 +210,8 @@ def run_sync_endpoint_build():
 def run_dashboard_build():
     os.system("git clone -b main --single-branch --branch 88-postgres-docker-database --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
                cd ccis-dashboard ; \
-               docker build -t ccis/dashboard .")
+               docker build -t ccis/dashboard . ; \
+               docker build -t ccis/dashboard-db docker-database/ -f docker-database/deploymentDB/Dockerfile")
 
 def deploy_stack(use_https):
     if use_https:

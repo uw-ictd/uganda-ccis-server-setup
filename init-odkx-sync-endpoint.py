@@ -105,7 +105,7 @@ def run_interactive_dashboard_config(domain):
     env_file_location = os.path.join(os.path.dirname(__file__), "dashboard.env")
 
     try:
-        mapbox = parse_dasboard_env_file(env_file_location)
+        mapbox = parse_dashboard_env_file(env_file_location)
         print("Found configuration at {}".format(env_file_location))
     except OSError:
         pass

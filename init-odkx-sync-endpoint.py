@@ -113,7 +113,7 @@ def run_interactive_dashboard_config(domain):
     print("To run the dashboard, you must first get a (free) Mapbox API token (https://www.mapbox.com/mapbox-gljs).")
     print("If you have not done this yet, please do it now...")
 
-    mapbox = input("What is your mapbox API token?  [({})]".format(mapbox))
+    input_mapbox = input("What is your mapbox API token?  [({})]".format(mapbox))
     if input_mapbox != "":
         mapbox = input_mapbox
 

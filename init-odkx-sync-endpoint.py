@@ -102,21 +102,9 @@ def run_interactive_config():
     return enforce_https
 
 def run_interactive_dashboard_config(domain):
-    env_file_location = os.path.join(os.path.dirname(__file__), "dashboard.env")
-
-    try:
-        mapbox = parse_dasboard_env_file(env_file_location)
-        print("Found configuration at {}".format(env_file_location))
-    except OSError:
-        pass
-
     print("To run the dashboard, you must first get a (free) Mapbox API token (https://www.mapbox.com/mapbox-gljs).")
     print("If you have not done this yet, please do it now...")
-
-    mapbox = input("What is your mapbox API token?  [({})]".format(mapbox))
-    if input_mapbox != "":
-        mapbox = input_mapbox
-
+    mapbox = input("What is your mapbox API token? ")
     write_dashboard_env_file(domain, mapbox)
 
 def write_dashboard_env_file(domain, mapbox):
@@ -184,15 +172,6 @@ def parse_env_file(filepath):
             if line.startswith("HTTPS_ADMIN_EMAIL="):
                 email=line[18:].strip()
     return (domain,email)
-
-def parse_dashbaord_env_file(filepath):
-    mapbox = None
-    with open(filepath) as f:
-        for line in f:
-            if line.startswith("MAPBOX_API_TOKEN="):
-                index = len("MAPBOX_API_TOKEN=")
-                mapbox = line[index:].strip()
-    return mapbox
 
 
 def run_docker_builds():

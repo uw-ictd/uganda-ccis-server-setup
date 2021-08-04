@@ -95,7 +95,7 @@ services:
       - sync-network
       - dashboard-network
     ports:
-      - 1433:1433
+      - 5432:5432
   nginx:
     image: nginx:1.19.4
     networks:

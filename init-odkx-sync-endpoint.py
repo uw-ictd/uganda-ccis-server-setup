@@ -99,6 +99,7 @@ def run_interactive_config():
         write_to_env_file(env_file_location, domain, email)
 
     run_interactive_dashboard_config(domain)
+    run_interactive_ccdbsync_config(domain)
     return enforce_https
 
 def run_interactive_dashboard_config(domain):
@@ -118,6 +119,25 @@ def run_interactive_dashboard_config(domain):
         mapbox = input_mapbox
 
     write_dashboard_env_file(domain, mapbox)
+
+def run_interactive_ccdbsync_config(domain):
+    env_file_location = os.path.join(os.path.dirname(__file__), "ccdbsync.env")
+	
+    try:
+        odk_username, odk_password = parse_ccdbsync_env_file(env_file_location)
+        print("Found ccdbsync configuration at {}".format(env_file_location))
+    except OSError:
+        pass
+
+    input_odk_username = input("What ODK-X user will be used to sync the dashboard database?  [({})]".format(odk_username))
+    if input_odk_username != "":
+        odk_username = input_odk_username
+		
+    input_odk_password = input("What ODK-X user password will be used to sync the dashboard database?  [({})]".format(odk_password))
+    if input_odk_password != "":
+        odk_password = input_odk_password		
+
+    write_ccdbsync_env_file(domain, odk_username, odk_password)
 
 def write_dashboard_env_file(domain, mapbox):
     filepath = os.path.join(os.path.dirname(__file__), "dashboard.env")
@@ -142,6 +162,31 @@ def write_dashboard_env_file(domain, mapbox):
                 """ Get a long random string """
                 key = ''.join(SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(40))
                 line = "COOKIE_KEY={}\n".format(key)
+
+            f.write(line)
+
+def write_ccdbsync_env_file(domain, odk_username, odk_password):
+    filepath = os.path.join(os.path.dirname(__file__), "ccdbsync.env")
+    """A janky in-memory file write.
+
+    This is not atomic and would use lots of ram for large files.
+    """
+    file_lines = []
+    with open(filepath, mode="r") as f:
+        for line in f:
+            file_lines.append(line)
+
+    with open(filepath, mode="w") as f:
+        for line in file_lines:
+            if line.startswith("ODK_SERVER="):
+                print("Setting ODK_SERVER")
+                line = "ODK_SERVER=https://{}/odktables\n".format(domain)
+            elif line.startswith("ODK_USERNAME="):
+                print("Setting ODK_USERNAME")
+                line = "ODK_USERNAME={}\n".format(odk_username)
+            elif line.startswith("ODK_PASSWORD="):
+                print("Setting ODK_PASSWORD")
+                line = "ODK_PASSWORD={}\n".format(odk_password)				
 
             f.write(line)
 
@@ -194,6 +239,19 @@ def parse_dashboard_env_file(filepath):
                 mapbox = line[index:].strip()
     return mapbox
 
+def parse_ccdbsync_env_file(filepath):
+    odk_username = None
+    odk_password = None
+    with open(filepath) as f:
+        for line in f:
+            if line.startswith("ODK_USERNAME="):
+                index = len("ODK_USERNAME=")
+                odk_username = line[index:].strip()
+            elif line.startswith("ODK_PASSWORD="):
+                index = len("ODK_PASSWORD=")
+                odk_password = line[index:].strip()				
+    return (odk_username, odk_password)
+
 
 def run_docker_builds():
     os.system("docker build --pull -t odk/sync-web-ui https://github.com/odk-x/sync-endpoint-web-ui.git")
@@ -213,6 +271,11 @@ def run_dashboard_build():
                cd ccis-dashboard ; \
                docker build -t ccis/dashboard . ; \
                docker build -t ccis/dashboard-db docker-database/ -f docker-database/deploymentDB/Dockerfile")
+			   
+def run_ccdbsync_build():
+    os.system("git clone -b main --single-branch --branch master --depth=1 https://github.com/uw-ictd/ccdbsync ; \
+               cd ccdbsync ; \
+               docker build -t db-sync . ")
 
 def deploy_stack(use_https):
     if use_https:
@@ -226,4 +289,5 @@ if __name__ == "__main__":
     run_docker_builds()
     run_sync_endpoint_build()
     run_dashboard_build()
+    run_ccdbsync_build()
     deploy_stack(https)

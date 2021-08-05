@@ -96,6 +96,8 @@ services:
       - dashboard-network
     ports:
       - 5432:5432
+    env_file:
+      - ccdbsync.env
   nginx:
     image: nginx:1.19.4
     networks:

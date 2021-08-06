@@ -122,7 +122,7 @@ def run_interactive_dashboard_config(domain):
 
 def run_interactive_ccdbsync_config(domain):
     env_file_location = os.path.join(os.path.dirname(__file__), "ccdbsync.env")
-	
+
     try:
         odk_username, odk_password = parse_ccdbsync_env_file(env_file_location)
         print("Found ccdbsync configuration at {}".format(env_file_location))
@@ -132,10 +132,10 @@ def run_interactive_ccdbsync_config(domain):
     input_odk_username = input("What ODK-X user will be used to sync the dashboard database?  [({})]".format(odk_username))
     if input_odk_username != "":
         odk_username = input_odk_username
-		
+
     input_odk_password = input("What ODK-X user password will be used to sync the dashboard database?  [({})]".format(odk_password))
     if input_odk_password != "":
-        odk_password = input_odk_password		
+        odk_password = input_odk_password
 
     write_ccdbsync_env_file(domain, odk_username, odk_password)
 
@@ -186,7 +186,7 @@ def write_ccdbsync_env_file(domain, odk_username, odk_password):
                 line = "ODK_USERNAME={}\n".format(odk_username)
             elif line.startswith("ODK_PASSWORD="):
                 print("Setting ODK_PASSWORD")
-                line = "ODK_PASSWORD={}\n".format(odk_password)				
+                line = "ODK_PASSWORD={}\n".format(odk_password)
 
             f.write(line)
 
@@ -249,7 +249,7 @@ def parse_ccdbsync_env_file(filepath):
                 odk_username = line[index:].strip()
             elif line.startswith("ODK_PASSWORD="):
                 index = len("ODK_PASSWORD=")
-                odk_password = line[index:].strip()				
+                odk_password = line[index:].strip()
     return (odk_username, odk_password)
 
 
@@ -266,12 +266,12 @@ def run_sync_endpoint_build():
                mvn -pl org.opendatakit:sync-endpoint-war,org.opendatakit:sync-endpoint-docker-swarm,org.opendatakit:sync-endpoint-common-dependencies clean install -DskipTests")
 
 def run_dashboard_build():
-    os.system("git clone -b main --single-branch --branch 88-postgres-docker-database --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
+    os.system("git clone -b main --single-branch --branch develop --depth=1 https://github.com/uw-ictd/ccis-dashboard ; \
                cp dashboard.env ccis-dashboard/.env ; \
                cd ccis-dashboard ; \
                docker build -t ccis/dashboard . ; \
                docker build -t ccis/dashboard-db docker-database/ -f docker-database/deploymentDB/Dockerfile")
-			   
+
 def run_ccdbsync_build():
     os.system("git clone -b main --single-branch --branch master --depth=1 https://github.com/uw-ictd/ccdbsync ; \
                cd ccdbsync ; \

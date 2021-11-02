@@ -1,0 +1,5 @@
+.env
+sync-endpoint
+ccis-dashboard
+*.swp
+*.swo

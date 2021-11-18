@@ -154,9 +154,6 @@ def write_dashboard_env_file(domain, mapbox):
         for line in file_lines:
             if line.startswith("MAPBOX_API_TOKEN="):
                 line = "MAPBOX_API_TOKEN={}\n".format(mapbox)
-            if line.startswith("ODKX_AUTH_URL="):
-                print("Setting ODKX_AUTH_URL")
-                line = "ODKX_AUTH_URL=https://{}/odktables/default/privilegesInfo\n".format(domain)
             if line.startswith("COOKIE_KEY="):
                 print("Setting COOKIE_KEY")
                 """ Get a long random string """

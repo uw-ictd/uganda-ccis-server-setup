@@ -77,6 +77,7 @@ services:
     image: ccis/dashboard
     networks:
       - dashboard-network
+      - sync-network
     ports:
       - 444:443
     env_file:

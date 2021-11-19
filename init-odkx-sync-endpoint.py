@@ -175,7 +175,7 @@ def write_ccdbsync_env_file(domain, odk_username, odk_password):
 
     with open(filepath, mode="w") as f:
         for line in file_lines:
-            elif line.startswith("ODK_USERNAME="):
+            if line.startswith("ODK_USERNAME="):
                 print("Setting ODK_USERNAME")
                 line = "ODK_USERNAME={}\n".format(odk_username)
             elif line.startswith("ODK_PASSWORD="):

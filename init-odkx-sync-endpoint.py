@@ -154,9 +154,6 @@ def write_dashboard_env_file(domain, mapbox):
         for line in file_lines:
             if line.startswith("MAPBOX_API_TOKEN="):
                 line = "MAPBOX_API_TOKEN={}\n".format(mapbox)
-            if line.startswith("ODKX_AUTH_URL="):
-                print("Setting ODKX_AUTH_URL")
-                line = "ODKX_AUTH_URL=https://{}/odktables/default/privilegesInfo\n".format(domain)
             if line.startswith("COOKIE_KEY="):
                 print("Setting COOKIE_KEY")
                 """ Get a long random string """
@@ -178,10 +175,7 @@ def write_ccdbsync_env_file(domain, odk_username, odk_password):
 
     with open(filepath, mode="w") as f:
         for line in file_lines:
-            if line.startswith("ODK_SERVER="):
-                print("Setting ODK_SERVER")
-                line = "ODK_SERVER=https://{}/odktables\n".format(domain)
-            elif line.startswith("ODK_USERNAME="):
+            if line.startswith("ODK_USERNAME="):
                 print("Setting ODK_USERNAME")
                 line = "ODK_USERNAME={}\n".format(odk_username)
             elif line.startswith("ODK_PASSWORD="):

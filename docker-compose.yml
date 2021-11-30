@@ -90,6 +90,13 @@ services:
       - dashboard-db-vol:/var/lib/postgresql/data
     env_file:
       - dashboard-database.env
+  metabase:
+    image: metabase/metabase
+    networks:
+      - ldap-network
+      - dashboard-network
+    ports:
+      - 3000:3000
   data-sync:
     image: db-sync
     networks:

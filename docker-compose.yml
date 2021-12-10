@@ -97,6 +97,10 @@ services:
       - dashboard-network
     ports:
       - 3000:3000
+    volumes:
+      - metabase-vol:/metabase-data
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
   data-sync:
     image: db-sync
     networks:
@@ -150,6 +154,7 @@ volumes:
   # these 2 need to be removed together
   ldap-vol: # preserve ldap db
   ldap-slapd.d-vol: # preserve ldap settings
+  metabase-vol: # preserve metabse configs (including users, visualizations)
 
 configs:
   # uncomment this to import a CA certificate into the Sync service

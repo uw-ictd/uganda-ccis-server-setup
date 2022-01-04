@@ -100,7 +100,7 @@ services:
     env_file:
       - ccdbsync.env
   nginx:
-    image: nginx:1.19.4
+    image: nginx:1.21.3
     networks:
       - sync-network
       - dashboard-network

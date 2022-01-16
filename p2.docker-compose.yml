@@ -33,7 +33,7 @@ services:
       - db.env
       - sync.env
   sync-2:
-    image: odk/sync_endpoint
+    image: odk/sync-endpoint
     networks: 
       - ldap-network
       - db-network

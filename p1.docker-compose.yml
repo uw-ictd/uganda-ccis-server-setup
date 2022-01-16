@@ -44,7 +44,7 @@ services:
     secrets:
       - source: org.opendatakit.sync-1.security.properties
         target: org.opendatakit.aggregate.security.properties
-      - source:  org.opendatakit.sync-1.jdbc.propertie
+      - source: org.opendatakit.sync-1.jdbc.properties
         target: org.opendatakit.aggregate.jdbc.properties
   web-ui-1:
     image: odk/sync-web-ui

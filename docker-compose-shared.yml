@@ -46,9 +46,9 @@ services:
       - dashboard-network
     ports:
       - 5432:5432
-   configs:
-     - source: ccdbsync.config
-       target: config/config.txt
+    configs:
+      - source: ccdbsync.config
+        target: /config/config.txt
   nginx:
     image: nginx:1.21.3
     networks:
@@ -96,7 +96,7 @@ configs:
     external:
       name: odkdemo.gr.fullchain.pem
     
- secrets:
+secrets:
   com.nginx.ssl_certificate_key:
     external: 
       name: odkdemo.gr.privkey.pem

@@ -16,6 +16,7 @@ from os import fdopen, remove
 from random import SystemRandom
 
 def run_interactive_config():
+    domain = ""
     print("Welcome to the ODK-X sync endpoint installation!")
     print("This script will guide you through setting up your installation")
     print("We'll need some information from you to get started though...")

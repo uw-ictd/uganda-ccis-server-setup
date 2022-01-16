@@ -42,15 +42,17 @@ services:
     env_file:
       - sync.env
     secrets:
-      - org.opendatakit.aggregate.security.properties
-      - org.opendatakit.aggregate.jdbc.properties
+      - source: org.opendatakit.sync-1.app.properties
+        target: org.opendatakit.aggregate.security.properties
+      - source:  org.opendatakit.sync-1.jdbc.propertie
+        target: org.opendatakit.aggregate.jdbc.properties
   web-ui-1:
     image: odk/sync-web-ui
     networks:
       - sync-network
     hostname: web-ui-1
     configs:
-      - source: org.opendatakit.sync-web-ui.app.properties
+      - source: org.opendatakit.sync-web-ui-1.app.properties
         target: /org.opendatakit.sync-web-ui.application.properties
 
 networks:
@@ -71,12 +73,12 @@ volumes:
   db-vol: # preserve db
 
 configs:
-  org.opendatakit.sync-web-ui.app.properties:
+  org.opendatakit.sync-web-ui-1.app.properties:
     file: ./config/web-ui/application.properties.1
 
 secrets:
-  org.opendatakit.aggregate.security.properties:
+  org.opendatakit.sync-1.security.properties:
     file: ./config/sync-endpoint/security.properties
-  org.opendatakit.aggregate.jdbc.properties:
+  org.opendatakit.sync-1.jdbc.properties:
     file: ./config/sync-endpoint/jdbc.properties
 

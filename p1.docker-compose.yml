@@ -1,0 +1,82 @@
+version: "3.3"
+
+services: 
+  db:
+    image: postgres:9.6
+    deploy:
+      replicas: 1
+    networks:
+      - db-network
+# ports:
+#   - "5432:5432"
+    volumes:
+      - db-vol:/var/lib/postgresql/data
+    env_file:
+      - db.env
+  db-bootstrap:
+    image: odk/db-bootstrap
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - db-network
+      - sync-network
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    env_file:
+      - db.env
+      - sync.env
+  sync-1:
+    image: odk/sync_endpoint
+    networks: 
+      - ldap-network
+      - db-network
+      - sync-network
+    hostname: sync-1
+    env_file:
+      - sync.env
+    secrets:
+      - org.opendatakit.aggregate.security.properties
+      - org.opendatakit.aggregate.jdbc.properties
+  web-ui-1:
+    image: odk/sync-web-ui
+    networks:
+      - sync-network
+    hostname: web-ui-1
+    configs:
+      - source: org.opendatakit.sync-web-ui.app.properties
+        target: /org.opendatakit.sync-web-ui.application.properties
+
+networks:
+  ldap-network:
+    external: 
+       name: odk-x-ldap-network
+  sync-network:
+    external: 
+       name: odk-x-sync-network
+  db-network:
+    driver: overlay
+    driver_opts:
+      encrypted: ""
+    internal: true
+
+
+volumes:
+  db-vol: # preserve db
+
+configs:
+  org.opendatakit.sync-web-ui.app.properties:
+    file: ./config/web-ui/application.properties.1
+
+secrets:
+  org.opendatakit.aggregate.security.properties:
+    file: ./config/sync-endpoint/security.properties
+  org.opendatakit.aggregate.jdbc.properties:
+    file: ./config/sync-endpoint/jdbc.properties
+

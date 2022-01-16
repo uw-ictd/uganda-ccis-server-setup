@@ -16,22 +16,12 @@ from os import fdopen, remove
 from random import SystemRandom
 
 def run_interactive_config():
-    env_file_location = os.path.join(os.path.dirname(__file__), "config", "https.env")
-
-    try:
-        domain, email = parse_env_file(env_file_location)
-        print("Found configuration at {}".format(env_file_location))
-    except OSError:
-        print("No default https configuration file found at expected path {}. This prevents automatically renewing certs!".format(env_file_location))
-        print("Please check your paths and file permissions, and make sure your config repo is up to date.")
-        exit(1)
-
     print("Welcome to the ODK-X sync endpoint installation!")
     print("This script will guide you through setting up your installation")
     print("We'll need some information from you to get started though...")
     time.sleep(1)
     print("")
-    print("Please input the domain name you will use for this installation. A valid domain name is required for HTTPS without distributing custom certificates.")
+    print("Please input the domain name you will use for Dashboard installation.")
     input_domain = input("domain [({})]:".format(domain))
 
     if input_domain != "":
@@ -48,59 +38,9 @@ def run_interactive_config():
             replaceInFile("ldap.env", r"^\s*LDAP_ADMIN_PASSWORD=.*$", "LDAP_ADMIN_PASSWORD={}".format(default_ldap_pwd))
             print("Password set to: {}".format(default_ldap_pwd))
 
-    while True:
-        print("Would you like to enforce HTTPS? We recommend yes.")
-        enforce_https = input("enforce https [(Y)/n]:")
-        if enforce_https == "":
-            enforce_https = "y"
-            enforce_https = enforce_https.lower().strip()[0]
-        if enforce_https in ["y", "n"]:
-            break
-
-    if enforce_https == "n":
-        print("Would you like to run an INSECURE and DANGEROUS server that will share your users's information if exposed to the Internet?")
-        insecure = input("run insecure [y/(N)]:")
-        if insecure == "":
-            insecure = "n"
-        if insecure.lower().strip()[0] != "y":
-            raise RuntimeError("HTTPS is currently required to run a secure public server. Please restart and select to enforce HTTPS")
-
-    enforce_https = enforce_https == "y"
-
-    print("Enforcing https:", enforce_https)
-    if enforce_https:
-        print("Please provide an admin email for security updates with HTTPS registration")
-        input_email = input("admin email [({})]:".format(email))
-
-        if input_email != "":
-            email = input_email
-
-        print("The system will now attempt to setup an HTTPS certificate for this server.")
-        print("For this to work you must have already have purchased/acquired a domain name (or subdomain) and setup a DNS A or AAAA record to point at this server's IP address.")
-        print("If you have not done this yet, please do it now...")
-        time.sleep(1)
-        proceed = input("Domain is ready to proceed with certificate acquisition? [(Y)/n]")
-        if proceed == "":
-            proceed = "y"
-        if proceed.strip().lower()[0] != "y":
-            print("Re-run this script once the domain is ready!")
-            exit(1)
-
-        os.system("sudo certbot certonly --standalone \
-          --email {} \
-          -d {} \
-          --rsa-key-size 4096 \
-          --agree-tos \
-          --cert-name bootstrap \
-          --keep-until-expiring \
-          --non-interactive".format(email, domain))
-
-        print("Attempting to save updated https configuration")
-        write_to_env_file(env_file_location, domain, email)
-
+ 
     run_interactive_dashboard_config(domain)
-    run_interactive_ccdbsync_config(domain)
-    return enforce_https
+
 
 def run_interactive_dashboard_config(domain):
     env_file_location = os.path.join(os.path.dirname(__file__), "dashboard.env")
@@ -120,24 +60,7 @@ def run_interactive_dashboard_config(domain):
 
     write_dashboard_env_file(domain, mapbox)
 
-def run_interactive_ccdbsync_config(domain):
-    env_file_location = os.path.join(os.path.dirname(__file__), "ccdbsync.env")
 
-    try:
-        odk_username, odk_password = parse_ccdbsync_env_file(env_file_location)
-        print("Found ccdbsync configuration at {}".format(env_file_location))
-    except OSError:
-        pass
-
-    input_odk_username = input("What ODK-X user will be used to sync the dashboard database?  [({})]".format(odk_username))
-    if input_odk_username != "":
-        odk_username = input_odk_username
-
-    input_odk_password = input("What ODK-X user password will be used to sync the dashboard database?  [({})]".format(odk_password))
-    if input_odk_password != "":
-        odk_password = input_odk_password
-
-    write_ccdbsync_env_file(domain, odk_username, odk_password)
 
 def write_dashboard_env_file(domain, mapbox):
     filepath = os.path.join(os.path.dirname(__file__), "dashboard.env")
@@ -159,28 +82,6 @@ def write_dashboard_env_file(domain, mapbox):
                 """ Get a long random string """
                 key = ''.join(SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(40))
                 line = "COOKIE_KEY={}\n".format(key)
-
-            f.write(line)
-
-def write_ccdbsync_env_file(domain, odk_username, odk_password):
-    filepath = os.path.join(os.path.dirname(__file__), "ccdbsync.env")
-    """A janky in-memory file write.
-
-    This is not atomic and would use lots of ram for large files.
-    """
-    file_lines = []
-    with open(filepath, mode="r") as f:
-        for line in f:
-            file_lines.append(line)
-
-    with open(filepath, mode="w") as f:
-        for line in file_lines:
-            if line.startswith("ODK_USERNAME="):
-                print("Setting ODK_USERNAME")
-                line = "ODK_USERNAME={}\n".format(odk_username)
-            elif line.startswith("ODK_PASSWORD="):
-                print("Setting ODK_PASSWORD")
-                line = "ODK_PASSWORD={}\n".format(odk_password)
 
             f.write(line)
 
@@ -233,19 +134,6 @@ def parse_dashboard_env_file(filepath):
                 mapbox = line[index:].strip()
     return mapbox
 
-def parse_ccdbsync_env_file(filepath):
-    odk_username = None
-    odk_password = None
-    with open(filepath) as f:
-        for line in f:
-            if line.startswith("ODK_USERNAME="):
-                index = len("ODK_USERNAME=")
-                odk_username = line[index:].strip()
-            elif line.startswith("ODK_PASSWORD="):
-                index = len("ODK_PASSWORD=")
-                odk_password = line[index:].strip()
-    return (odk_username, odk_password)
-
 
 def run_docker_builds():
     os.system("docker build --pull -t odk/sync-web-ui https://github.com/odk-x/sync-endpoint-web-ui.git")
@@ -271,17 +159,17 @@ def run_ccdbsync_build():
                cd ccdbsync ; \
                docker build -t db-sync . ")
 
-def deploy_stack(use_https):
-    if use_https:
-        os.system("docker stack deploy -c docker-compose.yml -c docker-compose-https.yml syncldap")
-    else:
-        os.system("docker stack deploy -c docker-compose.yml syncldap")
+def deploy_stack():
+    os.system("docker stack deploy -c docker-compose-shared.yml shared")
+    os.system("docker stack deploy -c p1.docker-compose.yml p1")
+    os.system("docker stack deploy -c p2.docker-compose.yml p2")
+    os.system("docker stack deploy -c p3.docker-compose.yml p3")
 
 
 if __name__ == "__main__":
-    https = run_interactive_config()
+    run_interactive_config()
     run_docker_builds()
     run_sync_endpoint_build()
     run_dashboard_build()
     run_ccdbsync_build()
-    deploy_stack(https)
+    deploy_stack()

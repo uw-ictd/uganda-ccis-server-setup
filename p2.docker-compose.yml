@@ -38,14 +38,11 @@ services:
       - ldap-network
       - db-network
       - sync-network
-    hostname: sync-2  
     env_file:
       - sync.env
     secrets:
-      - source: org.opendatakit.sync-2.security.properties
-        target: org.opendatakit.aggregate.security.properties
-      - source: org.opendatakit.sync-2.jdbc.properties
-        target: org.opendatakit.aggregate.jdbc.properties
+      - org.opendatakit.aggregate.security.properties
+      - org.opendatakit.aggregate.jdbc.properties
   web-ui-2:
     image: odk/sync-web-ui
     networks:
@@ -77,7 +74,7 @@ configs:
     file: ./config/web-ui/application.properties.2
 
 secrets:
-  org.opendatakit.sync-2.security.properties:
+  org.opendatakit.aggregate.security.properties:
     file: ./config/sync-endpoint/security.properties
-  org.opendatakit.sync-2.jdbc.properties:
+  org.opendatakit.aggregate.jdbc.properties:
     file: ./config/sync-endpoint/jdbc.properties

@@ -41,9 +41,10 @@ services:
     hostname: sync-2  
     env_file:
       - sync.env
-  - source: org.opendatakit.sync-2.app.properties
+    secrets:
+      - source: org.opendatakit.sync-2.security.properties
         target: org.opendatakit.aggregate.security.properties
-      - source:  org.opendatakit.sync-2.jdbc.propertie
+      - source: org.opendatakit.sync-2.jdbc.propertie
         target: org.opendatakit.aggregate.jdbc.properties
   web-ui-2:
     image: odk/sync-web-ui

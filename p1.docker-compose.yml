@@ -42,7 +42,7 @@ services:
     env_file:
       - sync.env
     secrets:
-      - source: org.opendatakit.sync-1.app.properties
+      - source: org.opendatakit.sync-1.security.properties
         target: org.opendatakit.aggregate.security.properties
       - source:  org.opendatakit.sync-1.jdbc.propertie
         target: org.opendatakit.aggregate.jdbc.properties

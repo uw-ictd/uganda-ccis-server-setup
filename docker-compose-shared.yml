@@ -46,8 +46,9 @@ services:
       - dashboard-network
     ports:
       - 5432:5432
-    env_file:
-      - ccdbsync.env
+   configs:
+     - source: ccdbsync.config
+       target: config/config.txt
   nginx:
     image: nginx:1.21.3
     networks:
@@ -85,6 +86,8 @@ volumes:
   ldap-slapd.d-vol: # preserve ldap settings
 
 configs:
+  ccdbsync.config:
+    file: ./config.txt
   com.nginx.sync-endpoint.conf:
     file: ./config/nginx/sync-endpoint-https.conf.odkdemo-nginx
   com.nginx.proxy_buffer.conf:

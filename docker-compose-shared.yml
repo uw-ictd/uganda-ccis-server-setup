@@ -63,8 +63,10 @@ services:
       - source: com.nginx.proxy_buffer.conf
         target: /etc/nginx/conf.d/proxy_buffer.conf
       - com.nginx.ssl_certificate
+      - com.nginx.ccis.ssl_certificate
     secrets:
       - com.nginx.ssl_certificate_key
+      - com.nginx.ccis.ssl_certificate_key
 
 networks:
   ldap-network:
@@ -95,9 +97,15 @@ configs:
   com.nginx.ssl_certificate:
     external:
       name: odkdemo.gr.fullchain.pem
+  com.nginx.ccis.ssl_certificate:
+    external:
+      name: ccisuganda.org.fullchain.pem
     
 secrets:
   com.nginx.ssl_certificate_key:
     external: 
       name: odkdemo.gr.privkey.pem
+  com.nginx.ccis.ssl_certificate_key:
+    external: 
+      name: ccisuganda.org.privkey.pem
 

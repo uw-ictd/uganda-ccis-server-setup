@@ -174,15 +174,15 @@ Log in with username = **cn=admin,dc=example,dc=org** and the password you defin
 
 5. Take the whole stack down so we can remove the outdated database
 
-  `$ docker stack rm syncldap`
+  `$ docker stack rm <stack name>`
 
 6. Remove the outdated database (it will be automatically repopulated by the ccdbsync service)
 
-  `$ docker volume rm syncldap_dashboard-db-vol`
+  `$ docker volume rm <stack name>_dashboard-db-vol`
 
 7. Restart the stack with the updated containers:
 
-  `$ docker stack deploy --prune -c docker-compose.yml -c docker-compose-https.yml syncldap`
+  `$ docker stack deploy --prune -c docker-compose.yml -c docker-compose-https.yml <stack name>`
 
 8. Wait ~30 seconds for docker to automatically start the latest version of the dashboard, then load the dashboard from a Chrome browser and check that the version number displayed to the right of the "CCIS Dashboard" title is the same as that identified in step 2. The dashboard will not show any data immediately
 

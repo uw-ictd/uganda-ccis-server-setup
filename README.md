@@ -127,3 +127,63 @@ user@localhost:~/odkx# python3 init-odkx-sync-endpoint.py
 
 When everything has been built and started, you can open a browser and go to https://<your_domain>:40000 to access the LDAP admin interface.
 Log in with username = **cn=admin,dc=example,dc=org** and the password you defined during the intialization script. Then you can [create the ODK-X Sync Endpoint users according to the documentation](https://docs.odk-x.org/sync-endpoint/#creating-users).
+
+## Updating the CCIS Dashboard
+### Basic: for changes that do not touch the database schema
+1. Navigate to the `ccis-dashboard` repository within the `uganda-ccis-server-setup` repository. This should be present if the dashboard has been deployed.
+
+  `$ cd ccis-dashboard`
+
+2. Pull the latest ccis-dashboard code. Take note of the version number (in the package.json file)
+
+  `$ git pull`
+
+3. Rebuild the dashboard container
+
+  `$ docker build -t ccis/dashboard .`
+
+4. Stop the current dashboard container
+
+  `$ docker stop $(docker ps -q --filter ancestor=ccis/dashboard --format="{{.ID}}")`
+
+5. Wait ~30 seconds for docker to automatically start the latest version of the dashboard, then load the dashboard from a Chrome browser and check that the version number displayed to the right of the "CCIS Dashboard" title is the same as that identified in step 2.
+
+### Advanced: for dashboard updates that change the schema
+1. Navigate to the `ccis-dashboard` repository within the `uganda-ccis-server-setup` repository. This should be present if the dashboard has been deployed.
+
+  `$ cd ccis-dashboard`
+
+2. Pull the latest ccis-dashboard code. Take note of the version number (in the package.json file)
+
+  `$ git pull`
+
+3. Rebuild the dashboard container
+
+  `$ docker build -t ccis/dashboard .`
+
+4. Rebuild the dashboard database container
+
+  `$ docker build -t ccis/dashboard-db docker-database/ -f docker-database/deploymentDB/Dockerfile`
+
+4.1. If the dashboard database schema is changing, the ccdbsync service may also have a new change. If so, update that container too:
+
+```
+  $ cd ../ccdbsync
+  $ docker build -t db-sync .
+```
+
+5. Take the whole stack down so we can remove the outdated database
+
+  `$ docker stack rm <stack name>`
+
+6. Remove the outdated database (it will be automatically repopulated by the ccdbsync service)
+
+  `$ docker volume rm <stack name>_dashboard-db-vol`
+
+7. Restart the stack with the updated containers:
+
+  `$ docker stack deploy --prune -c docker-compose.yml -c docker-compose-https.yml <stack name>`
+
+8. Wait ~30 seconds for docker to automatically start the latest version of the dashboard, then load the dashboard from a Chrome browser and check that the version number displayed to the right of the "CCIS Dashboard" title is the same as that identified in step 2. The dashboard will not show any data immediately
+
+9. Wait for the ccdbsync service to repopulate the dashboard database (e.g., wait until a few minutes past the turn of the hour).
